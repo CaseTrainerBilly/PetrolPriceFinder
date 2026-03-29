@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255, 183, 3, 0.18), transparent 28%),
+    linear-gradient(180deg, #fbfaf5 0%, #f2f6ef 100%);
+  color: #122117;
+  font-family: "Instrument Sans", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Sora", "Trebuchet MS", sans-serif;
+}
+
+* {
+  border-color: #d6ddcf;
+}
+
+.app-shell {
+  background-image: radial-gradient(circle at 1px 1px, rgba(18, 33, 23, 0.06) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.panel {
+  @apply rounded-[28px] border border-border/80 bg-card/90 shadow-panel backdrop-blur;
+}
+
+.pill {
+  @apply inline-flex items-center rounded-full border border-border bg-white px-3 py-1 text-sm text-ink/80;
+}
+
+.field {
+  @apply w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/15;
+}
+
+.button-primary {
+  @apply inline-flex items-center justify-center rounded-2xl bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:cursor-not-allowed disabled:bg-ink/40;
+}
+
+.button-secondary {
+  @apply inline-flex items-center justify-center rounded-2xl border border-border bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-ink/40 hover:bg-accentSoft focus:outline-none focus:ring-2 focus:ring-accent/15;
+}
+
+.button-chip {
+  @apply rounded-full border border-border bg-white px-4 py-2 text-sm font-medium text-ink transition hover:border-accent hover:text-accent;
+}
+
+.button-chip-active {
+  @apply border-accent bg-accent text-white;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  border-radius: 24px;
+}
