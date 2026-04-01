@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Crosshair, Map, Rows3, Sparkles } from "lucide-react";
+import { Activity, Crosshair, Map, Rows3, Sparkles } from "lucide-react";
 
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
@@ -11,13 +11,15 @@ import { MapPanel } from "@/components/map-panel";
 import { ResultsSummary } from "@/components/results-summary";
 import { SearchControls } from "@/components/search-controls";
 import { StationCard } from "@/components/station-card";
-import { Coordinates, FuelType, SearchSource, SortOption, StationWithDistance } from "@/lib/types";
+import { Coordinates, DataSource, FuelType, SearchSource, SortOption, StationWithDistance } from "@/lib/types";
 import { mockLocations } from "@/lib/mock/locations";
 
 type ViewMode = "list" | "map";
 
 interface StationsApiResponse {
   stations: StationWithDistance[];
+  dataSource?: DataSource;
+  liveConfigured?: boolean;
 }
 
 interface LocationsApiResponse {
@@ -36,6 +38,9 @@ export function HomePageClient() {
   const [isLocating, setIsLocating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [fuelDataSource, setFuelDataSource] = useState<DataSource>("mock");
+  const [liveFuelConfigured, setLiveFuelConfigured] = useState(false);
   const [selectedCenter, setSelectedCenter] = useState<Coordinates>({
     lat: defaultCenter.lat,
     lng: defaultCenter.lng
@@ -44,7 +49,7 @@ export function HomePageClient() {
   const [searchSource, setSearchSource] = useState<SearchSource>("manual");
   const [hasSearched, setHasSearched] = useState(false);
 
-  const geolocationSupported = typeof navigator !== "undefined" && "geolocation" in navigator;
+  const geolocationSupported = isClient && "geolocation" in navigator;
 
   const loadStations = useCallback(async (center: Coordinates, source: SearchSource, label?: string) => {
     setError(null);
@@ -67,6 +72,8 @@ export function HomePageClient() {
       }
 
       setStations(data.stations);
+      setFuelDataSource(data.dataSource ?? "mock");
+      setLiveFuelConfigured(Boolean(data.liveConfigured));
       setSelectedCenter(center);
       setSearchSource(source);
       if (label) {
@@ -134,6 +141,10 @@ export function HomePageClient() {
   }
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
     void loadStations(selectedCenter, searchSource, queryLabel);
   }, [loadStations, queryLabel, searchSource, selectedCenter]);
 
@@ -149,6 +160,30 @@ export function HomePageClient() {
   return (
     <main className="app-shell min-h-screen px-4 py-5 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 pb-8">
+        <section
+          className={`rounded-[24px] border px-5 py-4 ${
+            fuelDataSource === "live"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+              : "border-amber-200 bg-amber-50 text-amber-900"
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <Activity className="mt-0.5 h-5 w-5 shrink-0" />
+            <div>
+              <p className="font-semibold">
+                Fuel data source: {fuelDataSource === "live" ? "Live API" : "Mock fallback"}
+              </p>
+              <p className="mt-1 text-sm">
+                {fuelDataSource === "live"
+                  ? "The station-price route is using a configured live provider."
+                  : liveFuelConfigured
+                    ? "A live provider is configured, but this request fell back to mock data."
+                    : "No Fuel Finder credentials are configured yet, so station prices are still coming from mock data."}
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="panel overflow-hidden">
           <div className="grid gap-8 p-6 lg:grid-cols-[1.15fr_0.85fr] lg:p-8">
             <div>
@@ -160,8 +195,8 @@ export function HomePageClient() {
                 Find the cheapest petrol nearby without losing time on the road.
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-ink/70 sm:text-lg">
-                A portfolio-quality location search experience built with Next.js, typed mock data, geolocation,
-                sorting, filters, and a map-ready results flow that can swap to a real fuel API later.
+                A portfolio-quality location search experience built with Next.js, live location search, geolocation,
+                sorting, filters, and a fuel-price layer designed for live API use with fallback protection.
               </p>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-3">

@@ -2,6 +2,7 @@ import { calculateDistanceMiles } from "@/lib/location-utils";
 import { mockStations } from "@/lib/mock/stations";
 import {
   Coordinates,
+  DataSource,
   FuelType,
   PetrolStation,
   SearchParams,
@@ -11,6 +12,19 @@ import {
 export interface StationProvider {
   getStations(params: SearchParams): Promise<StationWithDistance[]>;
   getStationById(id: string, origin?: Coordinates): Promise<StationWithDistance | null>;
+}
+
+export function isFuelFinderConfigured() {
+  return Boolean(
+    process.env.FUEL_FINDER_API_BASE_URL &&
+      process.env.FUEL_FINDER_TOKEN_URL &&
+      process.env.FUEL_FINDER_CLIENT_ID &&
+      process.env.FUEL_FINDER_CLIENT_SECRET
+  );
+}
+
+export function getFuelDataSource(): DataSource {
+  return isFuelFinderConfigured() ? "live" : "mock";
 }
 
 function getComparablePrice(station: PetrolStation, fuelType: FuelType) {

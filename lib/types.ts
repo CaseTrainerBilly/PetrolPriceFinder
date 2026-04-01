@@ -4,6 +4,8 @@ export type SortOption = "cheapest" | "nearest" | "best-value";
 
 export type SearchSource = "geolocation" | "manual";
 
+export type DataSource = "live" | "mock";
+
 export interface Coordinates {
   lat: number;
   lng: number;

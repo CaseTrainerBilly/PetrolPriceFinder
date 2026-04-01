@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { stationProvider } from "@/lib/data/station-provider";
+import { getFuelDataSource, isFuelFinderConfigured, stationProvider } from "@/lib/data/station-provider";
 import { FuelType, SortOption } from "@/lib/types";
 
 function parseNumber(value: string | null, fallback: number) {
@@ -26,5 +26,9 @@ export async function GET(request: NextRequest) {
     sort
   });
 
-  return NextResponse.json({ stations });
+  return NextResponse.json({
+    stations,
+    dataSource: getFuelDataSource(),
+    liveConfigured: isFuelFinderConfigured()
+  });
 }
